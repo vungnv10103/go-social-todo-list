@@ -30,7 +30,7 @@ func main() {
 			items.POST("", ginitem.CreateItem(db))
 			items.GET("", ListItem(db))
 			items.GET("/:id", ginitem.GetItem(db))
-			items.PATCH("/:id", UpdateItem(db))
+			items.PATCH("/:id", ginitem.UpdateItem(db))
 			items.DELETE("/:id", DeleteItem(db))
 		}
 	}
@@ -85,34 +85,6 @@ func DeleteItem(db *gorm.DB) func(c *gin.Context) {
 		if err := db.Table(model.TodoItem{}.TableName()).Where("id = ?", id).Updates(map[string]interface{}{
 			"status": "Deleted",
 		}).Error; err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{
-				"err": err.Error(),
-			})
-			return
-		}
-		c.JSON(http.StatusOK, common.SimpleSuccessResp(true))
-	}
-}
-
-func UpdateItem(db *gorm.DB) func(c *gin.Context) {
-	return func(c *gin.Context) {
-		var data model.TodoItemUpdate
-		id, err := strconv.Atoi(c.Param("id"))
-		if err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{
-				"err": err.Error(),
-			})
-			return
-		}
-
-		if err := c.ShouldBind(&data); err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{
-				"err": err.Error(),
-			})
-			return
-		}
-		// data.Id = id
-		if err := db.Where("id = ?", id).Updates(&data).Error; err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{
 				"err": err.Error(),
 			})
