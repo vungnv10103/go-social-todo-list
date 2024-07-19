@@ -10,7 +10,6 @@ import (
 	"social-todo-list/common"
 	"social-todo-list/module/item/model"
 	ginitem "social-todo-list/module/item/transport/gin"
-	"strconv"
 )
 
 func main() {
@@ -31,7 +30,7 @@ func main() {
 			items.GET("", ListItem(db))
 			items.GET("/:id", ginitem.GetItem(db))
 			items.PATCH("/:id", ginitem.UpdateItem(db))
-			items.DELETE("/:id", DeleteItem(db))
+			items.DELETE("/:id", ginitem.DeleteItem(db))
 		}
 	}
 	errSv := r.Run(":3000")
@@ -69,27 +68,5 @@ func ListItem(db *gorm.DB) func(c *gin.Context) {
 			return
 		}
 		c.JSON(http.StatusOK, common.NewSuccessResponse(result, paging, nil))
-	}
-}
-
-func DeleteItem(db *gorm.DB) func(c *gin.Context) {
-	return func(c *gin.Context) {
-		id, err := strconv.Atoi(c.Param("id"))
-		if err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{
-				"err": err.Error(),
-			})
-			return
-		}
-
-		if err := db.Table(model.TodoItem{}.TableName()).Where("id = ?", id).Updates(map[string]interface{}{
-			"status": "Deleted",
-		}).Error; err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{
-				"err": err.Error(),
-			})
-			return
-		}
-		c.JSON(http.StatusOK, common.SimpleSuccessResp(true))
 	}
 }
