@@ -2,6 +2,7 @@ package business
 
 import (
 	"context"
+	"social-todo-list/common"
 	"social-todo-list/module/item/model"
 	"strings"
 )
@@ -25,7 +26,7 @@ func (biz *createItemBiz) NewCreateItem(ctx context.Context, data *model.TodoIte
 	}
 
 	if err := biz.store.CreateItem(ctx, data); err != nil {
-		return err
+		return common.ErrCannotCreateEntity(model.EntityName, err)
 	}
 	return nil
 }

@@ -2,6 +2,7 @@ package business
 
 import (
 	"context"
+	"social-todo-list/common"
 	"social-todo-list/module/item/model"
 )
 
@@ -23,7 +24,7 @@ func (biz *getItemBiz) GetItemById(ctx context.Context, id int) (*model.TodoItem
 		"id": id,
 	})
 	if err != nil {
-		return nil, err
+		return nil, common.ErrCannotGetEntity(model.EntityName, err)
 	}
 	return data, nil
 }
